@@ -1,425 +1,415 @@
-<!<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="google-site-verification" content="hdFbjowA_HJwSwnyWbb-pGlbhVGDp3LnL0HOHpJzJj0" />
-    <title>Fluxo OS</title>
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
-    
-    <style>
-        :root {
-            --accent: #00d2ff;
-            --bg: #050a18;
-            --card: rgba(255, 255, 255, 0.08);
-            --border: rgba(255, 255, 255, 0.1);
-            --text: #e0e6ed;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fluxo OS</title>
 
-        * { box-sizing: border-box; outline: none; transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
-        body { 
-            margin: 0; font-family: 'Inter', sans-serif; 
-            background: var(--bg); color: var(--text);
-            background-image: radial-gradient(circle at 50% 0%, #1a2a4a 0%, #050a18 70%);
-            height: 100vh; overflow: hidden;
-        }
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 
-        .glass { background: var(--card); backdrop-filter: blur(15px); border: 1px solid var(--border); border-radius: 20px; }
-        .hidden { display: none !important; }
+<style>
+:root {
+    --accent: #00d2ff;
+    --bg: #050a18;
+    --card: rgba(255, 255, 255, 0.08);
+    --border: rgba(255, 255, 255, 0.1);
+    --text: #e0e6ed;
+}
 
-        /* Estrutura OS */
-        .main-app { display: grid; grid-template-columns: 80px 1fr 320px; height: calc(100vh - 40px); margin-top: 40px; padding: 20px; gap: 20px; }
-        .top-bar { position: fixed; top: 0; width: 100%; height: 35px; background: rgba(0,0,0,0.6); display: flex; align-items: center; padding: 0 20px; font-size: 11px; z-index: 10000; justify-content: space-between; border-bottom: 1px solid var(--border); letter-spacing: 1px; }
+* { box-sizing: border-box; outline: none; transition: 0.2s cubic-bezier(0.4,0,0.2,1); }
+body {
+    margin:0; font-family:'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    background-image: radial-gradient(circle at 50% 0%, #1a2a4a 0%, #050a18 70%);
+    height: 100vh; overflow: hidden;
+}
 
-        /* Sidebar */
-        .sidebar { display: flex; flex-direction: column; align-items: center; padding: 20px 0; gap: 15px; }
-        .nav-item { width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 15px; font-size: 18px; opacity: 0.4; color: white; }
-        .nav-item.active { opacity: 1; background: var(--accent); color: #000; box-shadow: 0 0 20px var(--accent); }
+.glass { background: var(--card); backdrop-filter: blur(15px); border:1px solid var(--border); border-radius:20px; }
+.hidden { display: none !important; }
 
-        .content-scroll { overflow-y: auto; padding-right: 10px; height: 100%; }
-        
-        /* Iframe para Sites Externos */
-        .app-iframe { width: 100%; height: 100%; border: none; border-radius: 15px; background: white; }
+.main-app { display: grid; grid-template-columns:80px 1fr 320px; height:calc(100vh - 40px); margin-top:40px; padding:20px; gap:20px; }
+.top-bar { position: fixed; top:0; width:100%; height:35px; background: rgba(0,0,0,0.6); display:flex; align-items:center; padding:0 20px; font-size:11px; z-index:10000; justify-content:space-between; border-bottom:1px solid var(--border); letter-spacing:1px; }
 
-        .post { padding: 20px; margin-bottom: 20px; border: 1px solid var(--border); animation: slideUp 0.4s ease; }
-        .avatar-circle { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--accent); object-fit: cover; }
-        .post-img { width: 100%; border-radius: 15px; margin-top: 15px; max-height: 400px; object-fit: cover; }
-        .post-actions { margin-top: 15px; display: flex; gap: 15px; border-top: 1px solid var(--border); padding-top: 10px; }
-        .action-btn { cursor: pointer; font-size: 13px; opacity: 0.6; }
-        .action-btn:hover { opacity: 1; color: var(--accent); }
+.sidebar { display:flex; flex-direction:column; align-items:center; padding:20px 0; gap:15px; }
+.nav-item { width:50px; height:50px; display:flex; align-items:center; justify-content:center; cursor:pointer; border-radius:15px; font-size:18px; opacity:0.4; color:white; }
+.nav-item.active { opacity:1; background: var(--accent); color:#000; box-shadow:0 0 20px var(--accent); }
 
-        .chat-container { height: 500px; display: flex; flex-direction: column; }
-        .chat-messages { flex-grow: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
-        .bubble { max-width: 75%; padding: 10px 15px; border-radius: 15px; font-size: 13px; }
-        .bubble.sent { align-self: flex-end; background: var(--accent); color: #000; }
-        .bubble.received { align-self: flex-start; background: rgba(255,255,255,0.1); }
+.content-scroll { overflow-y:auto; padding-right:10px; height:100%; }
 
-        .call-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 100000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .call-avatar { width: 130px; height: 130px; border-radius: 50%; border: 4px solid var(--accent); margin-bottom: 20px; box-shadow: 0 0 30px var(--accent); object-fit: cover; }
-        .call-status { font-size: 14px; letter-spacing: 2px; color: var(--accent); margin-bottom: 40px; animation: pulse 1.5s infinite; }
-        .call-actions { display: flex; gap: 30px; }
-        .call-btn { width: 65px; height: 65px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; }
-        .btn-hangup { background: #ff3b30; color: white; }
-        .btn-accept { background: #4cd964; color: white; }
+.app-iframe { width:100%; height:100%; border:none; border-radius:15px; background:white; }
 
-        input, textarea { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: rgba(0,0,0,0.3); color: white; margin-bottom: 10px; }
-        .btn { background: var(--accent); color: #000; border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; cursor: pointer; }
-        #toaster { position: fixed; bottom: 25px; right: 25px; padding: 15px 30px; border-radius: 12px; background: var(--accent); color: #000; font-weight: 800; transform: translateY(150px); z-index: 99999; transition: 0.4s; }
+.post { padding:20px; margin-bottom:20px; border:1px solid var(--border); animation:slideUp 0.4s ease; }
+.avatar-circle { width:45px; height:45px; border-radius:50%; border:2px solid var(--accent); object-fit:cover; }
+.post-img { width:100%; border-radius:15px; margin-top:15px; max-height:400px; object-fit:cover; }
+.post-actions { margin-top:15px; display:flex; gap:15px; border-top:1px solid var(--border); padding-top:10px; }
+.action-btn { cursor:pointer; font-size:13px; opacity:0.6; }
+.action-btn:hover { opacity:1; color:var(--accent); }
 
-        @keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    </style>
+.chat-container { height:500px; display:flex; flex-direction:column; }
+.chat-messages { flex-grow:1; overflow-y:auto; padding:15px; display:flex; flex-direction:column; gap:10px; }
+.bubble { max-width:75%; padding:10px 15px; border-radius:15px; font-size:13px; word-break:break-word; }
+.bubble.sent { align-self:flex-end; background: var(--accent); color:#000; }
+.bubble.received { align-self:flex-start; background: rgba(255,255,255,0.1); }
+
+.call-overlay { position: fixed; inset:0; background:rgba(0,0,0,0.95); z-index:100000; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.call-avatar { width:130px; height:130px; border-radius:50%; border:4px solid var(--accent); margin-bottom:20px; box-shadow:0 0 30px var(--accent); object-fit:cover; }
+.call-status { font-size:14px; letter-spacing:2px; color:var(--accent); margin-bottom:40px; animation:pulse 1.5s infinite; }
+.call-actions { display:flex; gap:30px; }
+.call-btn { width:65px; height:65px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:24px; cursor:pointer; }
+.btn-hangup { background:#ff3b30; color:white; }
+.btn-accept { background:#4cd964; color:white; }
+
+input, textarea { width:100%; padding:12px; border-radius:10px; border:1px solid var(--border); background:rgba(0,0,0,0.3); color:white; margin-bottom:10px; }
+.btn { background: var(--accent); color:#000; border:none; padding:10px 20px; border-radius:10px; font-weight:bold; cursor:pointer; }
+#toaster { position:fixed; bottom:25px; right:25px; padding:15px 30px; border-radius:12px; background: var(--accent); color:#000; font-weight:800; transform:translateY(150px); z-index:99999; transition:0.4s; }
+
+@keyframes pulse { 0%,100% { opacity:0.4; } 50% { opacity:1; } }
+@keyframes slideUp { from { opacity:0; transform:translateY(20px);} to {opacity:1; transform:translateY(0);} }
+
+/* RESPONSIVO MOBILE */
+@media (max-width:768px) {
+    .main-app { grid-template-columns:60px 1fr; padding:10px; gap:10px; }
+    .sidebar { flex-direction:row; justify-content:space-around; padding:10px 0; }
+    .nav-item { width:40px; height:40px; font-size:16px; }
+    .content-scroll { padding-right:0; }
+    aside { display:none; }
+    .top-bar { font-size:10px; padding:0 10px; }
+    .glass { border-radius:15px; padding:15px; }
+    #tab-messenger .chat-container { height:300px; }
+    #tab-feed textarea { font-size:14px; padding:10px; }
+    #tab-settings .glass { padding:15px; }
+    .post-img { max-height:250px; }
+    .call-overlay { padding:10px; }
+    .call-avatar { width:100px; height:100px; }
+    .call-status { font-size:12px; margin-bottom:20px; }
+    .call-btn { width:50px; height:50px; font-size:20px; }
+    #toaster { padding:10px 20px; font-size:12px; }
+}
+</style>
 </head>
+
 <body>
+<div class="top-bar">
+    <div><i class="fa fa-bolt"></i> <b>FLUXO</b> CORE</div>
+    <div id="os-clock">00:00:00</div>
+    <div><i class="fa fa-microchip"></i> SYSTEM MULTI-APP <i class="fa fa-battery-full" style="margin-left:10px"></i></div>
+</div>
 
-    <div class="top-bar">
-        <div><i class="fa fa-bolt"></i> <b>FLUXO</b> CORE</div>
-        <div id="os-clock">00:00:00</div>
-        <div><i class="fa fa-microchip"></i> SYSTEM MULTI-APP <i class="fa fa-battery-full" style="margin-left:10px"></i></div>
-    </div>
-
-    <div id="auth-screen" style="position: fixed; inset: 0; background: var(--bg); z-index: 8000; display: flex; align-items: center; justify-content: center;">
-        <div class="glass" style="width: 380px; padding: 40px; text-align: center;">
-            <h1 style="letter-spacing: 8px; color: var(--accent);">FLUXO</h1>
-            <input type="email" id="userEmail" placeholder="Teu E-mail">
-            <div id="firstTimeFields" class="hidden">
-                <div style="margin: 20px 0; cursor: pointer;" onclick="document.getElementById('avatarInput').click()">
-                    <img id="avatarPreview" src="https://ui-avatars.com/api/?background=00d2ff&color=000&name=?" style="width: 90px; height: 90px; border-radius: 50%; border: 3px solid var(--accent); object-fit: cover;">
-                </div>
-                <input type="file" id="avatarInput" class="hidden" accept="image/*">
-                <input type="text" id="username" placeholder="Teu Nome">
+<div id="auth-screen" style="position:fixed; inset:0; background:var(--bg); z-index:8000; display:flex; align-items:center; justify-content:center;">
+    <div class="glass" style="width:380px; padding:40px; text-align:center;">
+        <h1 style="letter-spacing:8px; color:var(--accent);">FLUXO</h1>
+        <input type="email" id="userEmail" placeholder="Teu E-mail">
+        <div id="firstTimeFields" class="hidden">
+            <div style="margin:20px 0; cursor:pointer;" onclick="document.getElementById('avatarInput').click()">
+                <img id="avatarPreview" src="https://ui-avatars.com/api/?background=00d2ff&color=000&name=?" style="width:90px; height:90px; border-radius:50%; border:3px solid var(--accent); object-fit:cover;">
             </div>
-            <button class="btn" style="width: 100%; margin-top: 15px;" onclick="handleAuth()">ENTRAR</button>
+            <input type="file" id="avatarInput" class="hidden" accept="image/*">
+            <input type="text" id="username" placeholder="Teu Nome">
         </div>
+        <button class="btn" style="width:100%; margin-top:15px;" onclick="handleAuth()">ENTRAR</button>
     </div>
+</div>
 
-    <div id="app" class="main-app hidden">
-        <nav class="sidebar glass">
-            <div class="nav-item active" title="Feed" onclick="switchTab('feed', this)"><i class="fa-solid fa-house"></i></div>
-            <div class="nav-item" title="Messenger" onclick="switchTab('messenger', this)"><i class="fa-solid fa-paper-plane"></i></div>
-            <div class="nav-item" title="Gaming Space" onclick="switchTab('gaming', this)"><i class="fa-solid fa-gamepad"></i></div>
-            <div class="nav-item" title="Ferramentas" onclick="switchTab('tools', this)"><i class="fa-solid fa-screwdriver-wrench"></i></div>
-            <div class="nav-item" title="Galeria" onclick="switchTab('gallery', this)"><i class="fa-solid fa-box-archive"></i></div>
-            <div class="nav-item" title="Definições" onclick="switchTab('settings', this)"><i class="fa-solid fa-gear"></i></div>
-            <div class="nav-item" onclick="location.reload()" style="margin-top:auto"><i class="fa-solid fa-power-off"></i></div>
-        </nav>
+<div id="app" class="main-app hidden">
+    <nav class="sidebar glass">
+        <div class="nav-item active" title="Feed" onclick="switchTab('feed', this)"><i class="fa-solid fa-house"></i></div>
+        <div class="nav-item" title="Messenger" onclick="switchTab('messenger', this)"><i class="fa-solid fa-paper-plane"></i></div>
+        <div class="nav-item" title="Gaming Space" onclick="switchTab('gaming', this)"><i class="fa-solid fa-gamepad"></i></div>
+        <div class="nav-item" title="Ferramentas" onclick="switchTab('tools', this)"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+        <div class="nav-item" title="Galeria" onclick="switchTab('gallery', this)"><i class="fa-solid fa-box-archive"></i></div>
+        <div class="nav-item" title="Definições" onclick="switchTab('settings', this)"><i class="fa-solid fa-gear"></i></div>
+        <div class="nav-item" onclick="location.reload()" style="margin-top:auto"><i class="fa-solid fa-power-off"></i></div>
+    </nav>
 
-        <main class="content-scroll" id="main-container">
-            <section id="tab-feed">
-                <div class="glass" style="padding: 20px; margin-bottom: 25px;">
-                    <textarea id="postTxt" rows="2" placeholder="O que estás a pensar?"></textarea>
-                    <div style="display:flex; justify-content: space-between;">
-                        <label style="cursor:pointer; color:var(--accent); font-size:13px"><i class="fa fa-image"></i> Media <input type="file" id="postImgInput" class="hidden" accept="image/*"></label>
-                        <button class="btn" onclick="publishPost()">POST</button>
-                    </div>
+    <main class="content-scroll" id="main-container">
+        <!-- Feed -->
+        <section id="tab-feed">
+            <div class="glass" style="padding:20px; margin-bottom:25px;">
+                <textarea id="postTxt" rows="2" placeholder="O que estás a pensar?"></textarea>
+                <div style="display:flex; justify-content: space-between;">
+                    <label style="cursor:pointer; color:var(--accent); font-size:13px"><i class="fa fa-image"></i> Media <input type="file" id="postImgInput" class="hidden" accept="image/*"></label>
+                    <button class="btn" onclick="publishPost()">POST</button>
                 </div>
-                <div id="feedArea"></div>
-            </section>
-
-            <section id="tab-messenger" class="hidden">
-                <div class="glass chat-container">
-                    <div style="padding:15px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
-                        <input type="email" id="chatDest" placeholder="Para: email@exemplo.com" style="margin:0; width: 70%;">
-                        <button class="btn" style="padding:8px" onclick="startCall(document.getElementById('chatDest').value)"><i class="fa fa-phone"></i></button>
-                    </div>
-                    <div id="chatMessages" class="chat-messages"></div>
-                    <div style="padding:15px; display:flex; gap:10px;">
-                        <input type="text" id="chatInput" placeholder="Mensagem..." style="margin:0" onkeypress="if(event.key==='Enter') sendChat()">
-                        <button class="btn" onclick="sendChat()"><i class="fa fa-location-arrow"></i></button>
-                    </div>
-                </div>
-            </section>
-
-            <section id="tab-gaming" class="hidden" style="height: 100%;">
-                <iframe src="https://lucascoto98.github.io/Gaming-Space/" class="app-iframe"></iframe>
-            </section>
-
-            <section id="tab-tools" class="hidden" style="height: 100%;">
-                <iframe src="https://lucascoto98.github.io/Ferramentas/" class="app-iframe"></iframe>
-            </section>
-
-            <section id="tab-gallery" class="hidden">
-                <h2>O Teu Vault</h2>
-                <div id="galleryArea" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px;"></div>
-            </section>
-
-            <section id="tab-settings" class="hidden">
-                <h2>Definições</h2>
-                <div class="glass" style="padding:25px; text-align:center;">
-                    <div style="width:100px; height:100px; margin:0 auto 15px; cursor:pointer;" onclick="document.getElementById('editAvatarInput').click()">
-                        <img id="editAvatarPreview" style="width:100%; height:100%; border-radius:50%; border:3px solid var(--accent); object-fit:cover;">
-                        <input type="file" id="editAvatarInput" class="hidden">
-                    </div>
-                    <input type="text" id="editUsername" placeholder="Nome">
-                    <button class="btn" style="width:100%" onclick="updateProfile()">GUARDAR</button>
-                </div>
-            </section>
-        </main>
-
-        <aside>
-            <div class="glass" style="padding:20px; text-align:center; margin-bottom:20px;">
-                <img id="myAvatarSide" class="avatar-circle" style="width:70px; height:70px;">
-                <h3 id="myNameSide" style="margin:10px 0 0 0;"></h3>
-                <small id="myEmailSide" style="opacity:0.5"></small>
             </div>
-            <div class="glass" style="padding:15px;">
-                <b style="font-size:11px; color:var(--accent)">CONTACTOS ATIVOS</b>
-                <div id="contactsArea" style="margin-top:10px; display:flex; flex-direction:column; gap:8px;"></div>
-            </div>
-        </aside>
-    </div>
+            <div id="feedArea"></div>
+        </section>
 
-    <div id="call-screen" class="call-overlay hidden">
-        <img id="call-img" src="" class="call-avatar">
-        <h2 id="call-name">...</h2>
-        <p id="call-status" class="call-status">SINALIZANDO...</p>
-        <div class="call-actions">
-            <div id="btn-accept-call" class="call-btn btn-accept hidden" onclick="acceptCall()"><i class="fa fa-phone"></i></div>
-            <div class="call-btn btn-hangup" onclick="endCall()"><i class="fa fa-phone-slash"></i></div>
+        <!-- Messenger -->
+        <section id="tab-messenger" class="hidden">
+            <div class="glass chat-container">
+                <div style="padding:15px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
+                    <input type="email" id="chatDest" placeholder="Para: email@exemplo.com" style="margin:0; width:70%;">
+                    <button class="btn" style="padding:8px" onclick="startCall(document.getElementById('chatDest').value)"><i class="fa fa-phone"></i></button>
+                </div>
+                <div id="chatMessages" class="chat-messages"></div>
+                <div style="padding:15px; display:flex; gap:10px;">
+                    <input type="text" id="chatInput" placeholder="Mensagem..." style="margin:0" onkeypress="if(event.key==='Enter') sendChat()">
+                    <button class="btn" onclick="sendChat()"><i class="fa fa-location-arrow"></i></button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Gaming -->
+        <section id="tab-gaming" class="hidden" style="height:100%;">
+            <iframe src="https://lucascoto98.github.io/Gaming-Space/" class="app-iframe"></iframe>
+        </section>
+
+        <!-- Tools -->
+        <section id="tab-tools" class="hidden" style="height:100%;">
+            <iframe src="https://lucascoto98.github.io/Ferramentas/" class="app-iframe"></iframe>
+        </section>
+
+        <!-- Gallery -->
+        <section id="tab-gallery" class="hidden">
+            <h2>O Teu Vault</h2>
+            <div id="galleryArea" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px;"></div>
+        </section>
+
+        <!-- Settings -->
+        <section id="tab-settings" class="hidden">
+            <h2>Definições</h2>
+            <div class="glass" style="padding:25px; text-align:center;">
+                <div style="width:100px; height:100px; margin:0 auto 15px; cursor:pointer;" onclick="document.getElementById('editAvatarInput').click()">
+                    <img id="editAvatarPreview" style="width:100%; height:100%; border-radius:50%; border:3px solid var(--accent); object-fit:cover;">
+                    <input type="file" id="editAvatarInput" class="hidden">
+                </div>
+                <input type="text" id="editUsername" placeholder="Nome">
+                <button class="btn" style="width:100%" onclick="updateProfile()">GUARDAR</button>
+            </div>
+        </section>
+    </main>
+
+    <aside>
+        <div class="glass" style="padding:20px; text-align:center; margin-bottom:20px;">
+            <img id="myAvatarSide" class="avatar-circle" style="width:70px; height:70px;">
+            <h3 id="myNameSide" style="margin:10px 0 0 0;"></h3>
+            <small id="myEmailSide" style="opacity:0.5"></small>
         </div>
-        <audio id="ringtone" loop src="https://assets.mixkit.co/active_storage/sfx/1359/1359-preview.mp3"></audio>
-        <audio id="remote-audio" autoplay></audio>
+        <div class="glass" style="padding:15px;">
+            <b style="font-size:11px; color:var(--accent)">CONTACTOS ATIVOS</b>
+            <div id="contactsArea" style="margin-top:10px; display:flex; flex-direction:column; gap:8px;"></div>
+        </div>
+    </aside>
+</div>
+
+<!-- Call Overlay -->
+<div id="call-screen" class="call-overlay hidden">
+    <img id="call-img" src="" class="call-avatar">
+    <h2 id="call-name">...</h2>
+    <p id="call-status" class="call-status">SINALIZANDO...</p>
+    <div class="call-actions">
+        <div id="btn-accept-call" class="call-btn btn-accept hidden" onclick="acceptCall()"><i class="fa fa-phone"></i></div>
+        <div class="call-btn btn-hangup" onclick="endCall()"><i class="fa fa-phone-slash"></i></div>
     </div>
+    <audio id="ringtone" loop src="https://assets.mixkit.co/active_storage/sfx/1359/1359-preview.mp3"></audio>
+    <audio id="remote-audio" autoplay></audio>
+</div>
 
-    <div id="toaster"></div>
+<div id="toaster"></div>
 
-    <script>
-        let currentUser = null;
-        let posts = JSON.parse(localStorage.getItem('fl_posts')) || [];
-        let messages = JSON.parse(localStorage.getItem('fl_msgs')) || [];
-        let peer;
-        let currentCall;
+<script>
+// ==========================
+// 💻💡 JS COMPLETO PC + MOBILE
+// ==========================
+let currentUser=null,posts=JSON.parse(localStorage.getItem('fl_posts'))||[],messages=JSON.parse(localStorage.getItem('fl_msgs'))||[],peer,currentCall;
 
-        setInterval(() => { document.getElementById('os-clock').innerText = new Date().toLocaleTimeString(); }, 1000);
-        function toast(m) { const t = document.getElementById('toaster'); t.innerText = m; t.style.transform = "translateY(0)"; setTimeout(() => t.style.transform = "translateY(150px)", 3000); }
+setInterval(()=>document.getElementById('os-clock').innerText=new Date().toLocaleTimeString(),1000);
 
-        function handleAuth() {
-            const email = document.getElementById('userEmail').value.trim().toLowerCase();
-            if(!email) return;
-            const stored = JSON.parse(localStorage.getItem('u_' + email));
-            if(stored) login(stored);
-            else {
-                const f = document.getElementById('firstTimeFields');
-                if(f.classList.contains('hidden')) f.classList.remove('hidden');
-                else {
-                    const u = { email, nome: document.getElementById('username').value || "User", foto: document.getElementById('avatarPreview').src };
-                    localStorage.setItem('u_' + email, JSON.stringify(u));
-                    login(u);
-                }
-            }
+function toast(m){const t=document.getElementById('toaster');t.innerText=m;t.style.transform="translateY(0)";setTimeout(()=>t.style.transform="translateY(150px)",3000);}
+
+function handleAuth(){
+    const email=document.getElementById('userEmail').value.trim().toLowerCase();
+    if(!email.includes("@")){toast("Email inválido"); return;}
+    const stored=JSON.parse(localStorage.getItem('u_'+email));
+    if(stored) login(stored);
+    else{
+        const f=document.getElementById('firstTimeFields');
+        if(f.classList.contains('hidden')) f.classList.remove('hidden');
+        else{
+            const username=document.getElementById('username').value.trim();
+            if(!username){toast("Escolhe um nome"); return;}
+            const u={email,nome:username,foto:document.getElementById('avatarPreview').src,createdAt:Date.now()};
+            localStorage.setItem('u_'+email,JSON.stringify(u));
+            login(u);
         }
+    }
+}
 
-        function login(u) {
-            currentUser = u;
-            document.getElementById('auth-screen').classList.add('hidden');
-            document.getElementById('app').classList.remove('hidden');
-            updateUI(); renderPosts(); renderContacts();
-            
-            const peerId = 'fluxo-' + currentUser.email.replace(/[^a-zA-Z0-9]/g, '');
-            peer = new Peer(peerId);
-            peer.on('call', call => { currentCall = call; showIncomingCall(call.peer); });
-            toast("SISTEMA OPERATIVO ATIVO");
+function login(u){
+    currentUser=u;
+    document.getElementById('auth-screen').classList.add('hidden');
+    document.getElementById('app').classList.remove('hidden');
+    updateUI(); renderPosts(); renderContacts();
+    const peerId='fluxo-'+currentUser.email.replace(/[^a-zA-Z0-9]/g,'');
+    peer=new Peer(peerId);
+    peer.on('call',call=>{currentCall=call; showIncomingCall(call.peer);});
+    toast("SISTEMA ATIVO");
+}
+
+function updateUI(){
+    document.getElementById('myNameSide').innerText=currentUser.nome;
+    document.getElementById('myEmailSide').innerText=currentUser.email;
+    document.getElementById('myAvatarSide').src=currentUser.foto;
+    document.getElementById('editUsername').value=currentUser.nome;
+    document.getElementById('editAvatarPreview').src=currentUser.foto;
+}
+
+function compressImage(file,callback){
+    const reader=new FileReader();reader.readAsDataURL(file);
+    reader.onload=ev=>{
+        const img=new Image();
+        img.src=ev.target.result;
+        img.onload=()=>{
+            const canvas=document.createElement('canvas');
+            canvas.width=img.width/2; canvas.height=img.height/2;
+            const ctx=canvas.getContext('2d');
+            ctx.drawImage(img,0,0,canvas.width,canvas.height);
+            callback(canvas.toDataURL());
         }
+    }
+}
 
-        function updateUI() {
-            document.getElementById('myNameSide').innerText = currentUser.nome;
-            document.getElementById('myEmailSide').innerText = currentUser.email;
-            document.getElementById('myAvatarSide').src = currentUser.foto;
-            document.getElementById('editUsername').value = currentUser.nome;
-            document.getElementById('editAvatarPreview').src = currentUser.foto;
-        }
+document.getElementById('avatarInput').onchange=function(e){
+    compressImage(e.target.files[0],res=>document.getElementById('avatarPreview').src=res);
+}
+document.getElementById('editAvatarInput').onchange=function(e){
+    compressImage(e.target.files[0],res=>{
+        document.getElementById('editAvatarPreview').src=res;
+        currentUser.foto=res;
+    });
+}
 
-        function switchTab(t, el) {
-            const sections = ['feed', 'messenger', 'gaming', 'tools', 'gallery', 'settings'];
-            sections.forEach(s => {
-                const target = document.getElementById('tab-'+s);
-                if(target) target.classList.add('hidden');
-            });
-            document.getElementById('tab-'+t).classList.remove('hidden');
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            el.classList.add('active');
-            if(t === 'gallery') renderGallery();
-            const container = document.getElementById('main-container');
-            if(t === 'gaming' || t === 'tools') container.style.overflow = "hidden";
-            else container.style.overflow = "auto";
-        }
+function switchTab(tab,el){
+    document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+    el.classList.add('active');
+    document.querySelectorAll('main > section').forEach(s=>s.classList.add('hidden'));
+    document.getElementById('tab-'+tab).classList.remove('hidden');
+}
 
-        // --- FUNÇÃO DE COMPRESSÃO E PUBLICAÇÃO (CORRIGIDO) ---
-        function compressImage(file, callback) {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = event => {
-                const img = new Image();
-                img.src = event.target.result;
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    const MAX_WIDTH = 800;
-                    let width = img.width;
-                    let height = img.height;
-                    if (width > MAX_WIDTH) {
-                        height *= MAX_WIDTH / width;
-                        width = MAX_WIDTH;
-                    }
-                    canvas.width = width;
-                    canvas.height = height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, width, height);
-                    callback(canvas.toDataURL('image/jpeg', 0.7));
-                };
-            };
-        }
+function publishPost(){
+    const txt=document.getElementById('postTxt').value.trim();
+    if(!txt) return;
+    const file=document.getElementById('postImgInput').files[0];
+    if(file){
+        compressImage(file,res=>{
+            posts.unshift({user:currentUser,foto:res,text:txt,time:Date.now()});
+            localStorage.setItem('fl_posts',JSON.stringify(posts));
+            renderPosts();
+        });
+    }else{
+        posts.unshift({user:currentUser,foto:null,text:txt,time:Date.now()});
+        localStorage.setItem('fl_posts',JSON.stringify(posts));
+        renderPosts();
+    }
+    document.getElementById('postTxt').value='';
+}
 
-        function publishPost() {
-            const txtArea = document.getElementById('postTxt');
-            const fileInput = document.getElementById('postImgInput');
-            const txt = txtArea.value.trim();
-            const file = fileInput.files[0];
+function renderPosts(){
+    const area=document.getElementById('feedArea');
+    area.innerHTML='';
+    posts.forEach(p=>{
+        const div=document.createElement('div'); div.className='post glass';
+        div.innerHTML=`<div style="display:flex;align-items:center;gap:10px;">
+            <img class="avatar-circle" src="${p.user.foto}">
+            <b>${p.user.nome}</b>
+        </div>
+        <p style="margin-top:10px;">${p.text}</p>
+        ${p.foto?`<img src="${p.foto}" class="post-img">`:''}`;
+        area.appendChild(div);
+    });
+    area.scrollTop=0;
+}
 
-            if (!txt && !file) return;
+// ========== CHAT ==========
+function sendChat(){
+    const msg=document.getElementById('chatInput').value.trim();
+    const dest=document.getElementById('chatDest').value.trim().toLowerCase();
+    if(!msg||!dest) return;
+    const m={from:currentUser.email,to:dest,msg,time:Date.now()};
+    messages.push(m);
+    localStorage.setItem('fl_msgs',JSON.stringify(messages));
+    renderChat(dest);
+    document.getElementById('chatInput').value='';
+}
 
-            const finalSave = (imgData = null) => {
-                const newPost = { 
-                    id: Date.now(), 
-                    u: currentUser.nome, 
-                    e: currentUser.email, 
-                    t: txt, 
-                    f: currentUser.foto, 
-                    i: imgData, 
-                    likes: 0 
-                };
-                
-                try {
-                    posts.unshift(newPost);
-                    localStorage.setItem('fl_posts', JSON.stringify(posts));
-                    txtArea.value = "";
-                    fileInput.value = "";
-                    renderPosts(); renderContacts();
-                    toast("POST PUBLICADO!");
-                } catch(e) {
-                    toast("ERRO: Memória cheia. Reduzi a foto.");
-                    posts.shift();
-                }
-            };
+function renderChat(dest){
+    const area=document.getElementById('chatMessages');
+    area.innerHTML='';
+    messages.filter(m=> (m.from===dest && m.to===currentUser.email) || (m.from===currentUser.email && m.to===dest))
+        .forEach(m=>{
+            const b=document.createElement('div'); b.className='bubble '+(m.from===currentUser.email?'sent':'received');
+            b.innerText=m.msg; area.appendChild(b);
+        });
+    area.scrollTop=area.scrollHeight;
+}
 
-            if (file) compressImage(file, finalSave);
-            else finalSave();
-        }
+function renderContacts(){
+    const area=document.getElementById('contactsArea'); area.innerHTML='';
+    const emails=[...new Set(messages.map(m=>m.from!==currentUser.email?m.from:m.to))];
+    emails.forEach(e=>{
+        const u=JSON.parse(localStorage.getItem('u_'+e));
+        if(!u) return;
+        const div=document.createElement('div'); div.style.display='flex'; div.style.alignItems='center'; div.style.gap='10px';
+        div.style.cursor='pointer'; div.onclick=()=>{document.getElementById('chatDest').value=e; switchTab('messenger',document.querySelector('.nav-item:nth-child(2)')); renderChat(e);}
+        div.innerHTML=`<img src="${u.foto}" class="avatar-circle" style="width:30px;height:30px;"><span>${u.nome}</span>`;
+        area.appendChild(div);
+    });
+}
 
-        function renderPosts() {
-            const area = document.getElementById('feedArea');
-            if(!area) return;
-            area.innerHTML = posts.map(p => `
-                <div class="glass post">
-                    <div style="display:flex; align-items:center; gap:10px;">
-                        <img src="${p.f}" class="avatar-circle" style="width:35px; height:35px">
-                        <b>${p.u}</b>
-                    </div>
-                    ${p.t ? `<p style="margin:15px 0">${p.t}</p>` : ''}
-                    ${p.i ? `<img src="${p.i}" class="post-img">` : ''}
-                    <div class="post-actions">
-                        <span class="action-btn" onclick="like(${p.id})"><i class="fa-solid fa-heart"></i> ${p.likes}</span>
-                        <span class="action-btn" onclick="openChat('${p.e}')"><i class="fa-solid fa-comment"></i></span>
-                        <span class="action-btn" onclick="startCall('${p.e}')"><i class="fa-solid fa-phone"></i></span>
-                    </div>
-                </div>
-            `).join('');
-        }
+// ========== PROFILE ==========
+function updateProfile(){
+    const n=document.getElementById('editUsername').value.trim();
+    if(!n) return;
+    currentUser.nome=n;
+    localStorage.setItem('u_'+currentUser.email,JSON.stringify(currentUser));
+    updateUI(); toast("Perfil Atualizado");
+}
 
-        function like(id) {
-            const p = posts.find(x => x.id === id);
-            if(p) { p.likes++; localStorage.setItem('fl_posts', JSON.stringify(posts)); renderPosts(); }
-        }
+// ========== CALLS ==========
+function startCall(peerId){
+    const call = peer.call('fluxo-'+peerId.replace(/[^a-zA-Z0-9]/g,''), undefined);
+    currentCall=call;
+    showOutgoingCall(peerId);
+}
 
-        async function startCall(email) {
-            if(!email || email === currentUser.email) return;
-            const targetPeerId = 'fluxo-' + email.replace(/[^a-zA-Z0-9]/g, '');
-            document.getElementById('call-img').src = "https://ui-avatars.com/api/?name=" + email;
-            document.getElementById('call-name').innerText = email;
-            document.getElementById('call-status').innerText = "A LIGAR...";
-            document.getElementById('call-screen').classList.remove('hidden');
-            document.getElementById('ringtone').play();
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                const call = peer.call(targetPeerId, stream);
-                currentCall = call;
-                call.on('stream', remoteStream => {
-                    document.getElementById('remote-audio').srcObject = remoteStream;
-                    document.getElementById('call-status').innerText = "EM CHAMADA";
-                });
-            } catch (err) { toast("Erro no microfone!"); endCall(); }
-        }
+function showIncomingCall(peerId){
+    document.getElementById('call-screen').classList.remove('hidden');
+    document.getElementById('call-name').innerText=peerId;
+    document.getElementById('btn-accept-call').classList.remove('hidden');
+    document.getElementById('ringtone').play();
+}
 
-        function showIncomingCall(peerId) {
-            document.getElementById('call-name').innerText = "CHAMADA ENTRANTE";
-            document.getElementById('btn-accept-call').classList.remove('hidden');
-            document.getElementById('call-screen').classList.remove('hidden');
-            document.getElementById('ringtone').play();
-        }
+function showOutgoingCall(peerId){
+    document.getElementById('call-screen').classList.remove('hidden');
+    document.getElementById('call-name').innerText=peerId;
+    document.getElementById('btn-accept-call').classList.add('hidden');
+    document.getElementById('ringtone').play();
+}
 
-        async function acceptCall() {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            currentCall.answer(stream);
-            currentCall.on('stream', s => {
-                document.getElementById('remote-audio').srcObject = s;
-                document.getElementById('call-status').innerText = "EM CHAMADA";
-                document.getElementById('btn-accept-call').classList.add('hidden');
-                document.getElementById('ringtone').pause();
-            });
-        }
+function acceptCall(){
+    if(!currentCall) return;
+    navigator.mediaDevices.getUserMedia({video:false,audio:true}).then(stream=>{
+        currentCall.answer(stream);
+        currentCall.on('stream', remoteStream=>{
+            document.getElementById('remote-audio').srcObject=remoteStream;
+        });
+    });
+    document.getElementById('ringtone').pause();
+    document.getElementById('btn-accept-call').classList.add('hidden');
+}
 
-        function endCall() {
-            if(currentCall) currentCall.close();
-            document.getElementById('call-screen').classList.add('hidden');
-            document.getElementById('ringtone').pause();
-        }
+function endCall(){
+    if(currentCall) currentCall.close();
+    document.getElementById('call-screen').classList.add('hidden');
+    document.getElementById('ringtone').pause();
+}
 
-        function sendChat() {
-            const to = document.getElementById('chatDest').value.toLowerCase();
-            const txt = document.getElementById('chatInput').value;
-            if(!to || !txt) return;
-            messages.push({ from: currentUser.email, to, text: txt });
-            localStorage.setItem('fl_msgs', JSON.stringify(messages));
-            document.getElementById('chatInput').value = ""; renderChat();
-        }
+// ========== MOBILE SCROLL ==========
+document.getElementById('feedArea').addEventListener('DOMNodeInserted',()=>document.getElementById('feedArea').scrollTop=0);
+document.getElementById('chatMessages').addEventListener('DOMNodeInserted',()=>document.getElementById('chatMessages').scrollTop=document.getElementById('chatMessages').scrollHeight);
 
-        function renderChat() {
-            const to = document.getElementById('chatDest').value.toLowerCase();
-            const area = document.getElementById('chatMessages');
-            if(!to || !area) return;
-            const my = messages.filter(m => (m.from === currentUser.email && m.to === to) || (m.from === to && m.to === currentUser.email));
-            area.innerHTML = my.map(m => `<div class="bubble ${m.from === currentUser.email ? 'sent' : 'received'}">${m.text}</div>`).join('');
-            area.scrollTop = area.scrollHeight;
-        }
-
-        function openChat(e) { document.getElementById('chatDest').value = e; switchTab('messenger', document.querySelectorAll('.nav-item')[1]); renderChat(); }
-
-        function renderGallery() {
-            const imgs = posts.filter(p => p.e === currentUser.email && p.i);
-            document.getElementById('galleryArea').innerHTML = imgs.map(p => `<img src="${p.i}" style="width:100%; aspect-ratio:1; object-fit:cover; border-radius:10px;">`).join('');
-        }
-
-        function updateProfile() {
-            currentUser.nome = document.getElementById('editUsername').value;
-            currentUser.foto = document.getElementById('editAvatarPreview').src;
-            localStorage.setItem('u_' + currentUser.email, JSON.stringify(currentUser));
-            updateUI(); toast("PERFIL ATUALIZADO");
-        }
-
-        function renderContacts() {
-            const unique = [...new Map(posts.map(p => [p.e, p])).values()];
-            document.getElementById('contactsArea').innerHTML = unique.map(u => `
-                <div onclick="openChat('${u.e}')" style="display:flex; align-items:center; gap:10px; cursor:pointer; font-size:12px;">
-                    <img src="${u.foto}" style="width:25px; height:25px; border-radius:50%">
-                    <span>${u.nome}</span>
-                </div>
-            `).join('');
-        }
-
-        document.getElementById('avatarInput').onchange = e => { const r = new FileReader(); r.onload = () => document.getElementById('avatarPreview').src = r.result; r.readAsDataURL(e.target.files[0]); };
-        document.getElementById('editAvatarInput').onchange = e => { const r = new FileReader(); r.onload = () => document.getElementById('editAvatarPreview').src = r.result; r.readAsDataURL(e.target.files[0]); };
-        document.getElementById('chatDest').oninput = renderChat;
-    </script>
+</script>
 </body>
 </html>
